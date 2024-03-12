@@ -1,0 +1,84 @@
+#!/bin/bash
+
+DEFAULT_BUCKET_NAME="s3://defaultbucket"
+
+uploading="no"
+
+greeting_text=(
+  '1 - Change bucket'
+  '2 - Upload file'
+  '3 - Upload directory'
+  '4 - List all objects'
+  '5 - Delete object'
+  '0 - Exit'
+)
+
+for option in "${greeting_text[@]}"
+do
+  echo $option
+done
+
+while true
+do
+  read -r -p "Choose action>" action
+
+  if [[ "$action" == 0 ]];then
+    break
+  
+  elif [[ "$action" == 1 ]];then
+    read -p "New bucket name(only name)>" new_name
+    new_name="s3://$new_name"
+    CHECK_EXISTANCE=$(aws s3 ls "$new_name" 2>&1 | grep -c 'NoSuchBucket')
+    if [[ "$CHECK_EXISTANCE" == 0 ]];then
+      DEFAULT_BUCKET_NAME="$new_name"
+      echo "SUCCESFULLY CHANGED. NAME: $DEFAULT_BUCKET_NAME"
+    else
+      echo "Bucket not found"
+    fi
+    continue
+  
+  elif [[ "$action" == 2 ]];then
+    read -p "Write filename or 'path/to/file'>" filename
+    if [[ -f $filename ]];then
+      aws s3 ls "$DEFAULT_BUCKET_NAME/$(basename $filename)"
+      if [ $? -eq 0 ];then
+        echo "file already exists"
+        read -p "Do you want to overwrite file? (yes/no)>" uploading
+        if [[ ! "$uploading" = "yes" ]];then
+          continue
+        fi
+      fi
+      uploading="yes"
+      pv $filename | aws s3 cp $filename $DEFAULT_BUCKET_NAME
+      aws s3 ls "$DEFAULT_BUCKET_NAME/$(basename $filename)"
+      if [ $? -eq 0 ];then
+        echo "Uploaded succesfully"
+      else
+        echo "There was an error"
+      fi
+      uploading="no"
+    else
+      echo "File doesn't exist"
+    fi
+
+    elif [[ "$action" == 3 ]];then
+      read -p "Type dir path>" dirpath
+      if [[ -d $dirpath ]];then
+        aws s3 cp $dirpath "$DEFAULT_BUCKET_NAME/$dirpath" --recursive
+        echo "Directory uploaded succesfully"
+      else
+        echo "Directory doesn't exist"
+      fi
+
+    elif [[ "$action" == 4 ]];then
+      aws s3 ls $DEFAULT_BUCKET_NAME
+      continue
+
+    elif [[ "$action" == 5 ]];then
+      read -p "Type name of the object you want to delete>" objname
+      aws s3 ls "$DEFAULT_BUCKET_NAME/$objname"
+      aws s3 rm "$DEFAULT_BUCKET_NAME/$objname"
+      echo "Succesfully deleted $objname"
+  fi
+done
+
