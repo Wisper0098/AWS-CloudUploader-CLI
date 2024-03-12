@@ -6,17 +6,9 @@ This Bash script is a simple command-line utility for interacting with Amazon S3
 
 ### 1. Default Bucket
 
-The script starts by defining a default bucket named "wisperbucket098" using the `DEFAULT_BUCKET_NAME` variable.
+The script starts by defining a default bucket using the `DEFAULT_BUCKET_NAME` variable.
 
-### 2. Menu Display
-
-Displays a menu with various options using an array called `greeting_text`.
-
-### 3. User Interaction Loop
-
-Enters a loop where the user can input their desired action.
-
-### 4. Options
+### 2. Options
 
 - **Change Bucket (Option 1):**
   - Allows the user to change the default bucket by providing a new name.
@@ -45,7 +37,29 @@ Enters a loop where the user can input their desired action.
 
 Clone the repository:
 
-
 ```bash
-git clone https://github.com/yourusername/s3-cloud-uploader.git
-cd s3-cloud-uploader
+git clone https://github.com/Wisper0098/AWS-CloudUploader-CLI.git
+cd AWS-CloudUploader-CLI
+```
+
+Set up AWS credentials in 'credentials' file 
+```bash
+aws_access_key_id = YOUR_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
+region = your_region
+```
+
+Type name of the bucket in 'clouduploader'
+```bash
+DEFAULT_BUCKET_NAME="s3://yourbucketname"
+```
+
+Build up docker image
+```bash
+docker build -t clouduploader .
+```
+
+Run script using docker
+```bash
+docker run -it -v $(pwd)/credentials:/root/.aws/credentials clouduploader
+```
