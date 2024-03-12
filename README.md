@@ -17,7 +17,7 @@ The script starts by defining a default bucket using the `DEFAULT_BUCKET_NAME` v
 - **Upload File (Option 2):**
   - Prompts the user for a filename or path to a file.
   - Checks if the file exists, and if it does, checks if it already exists in the S3 bucket.
-  - If the user chooses to overwrite, it uses `pv` to display a progress bar while uploading the file to the S3 bucket.
+  - It uses `pv` to display a progress bar while uploading the file to the S3 bucket.
 
 - **Upload Directory (Option 3):**
   - Prompts the user for a directory path.
@@ -28,7 +28,7 @@ The script starts by defining a default bucket using the `DEFAULT_BUCKET_NAME` v
 
 - **Delete Object (Option 5):**
   - Prompts the user for the name of the object they want to delete.
-  - Lists the object and then deletes it from the S3 bucket.
+  - Checks and deletes it from the S3 bucket.
 
 - **Exit (Option 0):**
   - Breaks out of the loop and terminates the script.
